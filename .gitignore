@@ -1,0 +1,15 @@
+# Python:
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# virtualenv
+venv/
+
+# idea
+.idea/
+
+#docs
