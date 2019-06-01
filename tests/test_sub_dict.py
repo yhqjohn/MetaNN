@@ -1,6 +1,6 @@
 import pytest
 from collections import OrderedDict
-from metamodule.utils import SubDict
+from metann.utils import SubDict
 
 super_dict = OrderedDict(zip(range(0, 10), range(1, 11)))
 sub_dict = SubDict(super_dict, keys=[2, 1, 0], keep_order=False)

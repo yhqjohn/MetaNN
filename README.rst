@@ -1,4 +1,4 @@
-MetaModule for PyTorch Meta Learning
+MetaNN for PyTorch Meta Learning
 =====================================
 
 1. Introduction
@@ -20,7 +20,7 @@ ___________
 
 .. code-block::
 
-    from metamodule import DependentModule, Learner
+    from metann import DependentModule, Learner
     from torch import nn
     net = torch.nn.Sequential(
         nn.Linear(10, 100),

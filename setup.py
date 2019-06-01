@@ -6,9 +6,9 @@ with open('requirements.txt') as f:
 readme = open('README.rst').read()
 
 setup(
-    name='MetaModule',
+    name='MetaNN',
     version='0.1.0',
-    description='MetaModule provides extensions of PyTorch Module for meta learning',
+    description='MetaNN provides extensions of PyTorch nn.Module for meta learning',
     license='MIT',
     author='Zhi Zhang',
     author_email='yhqjohn@gmail.com',

@@ -1,7 +1,7 @@
 import pytest
 import torch
 from torch import nn
-from metamodule import DependentModule
+from metann import DependentModule
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

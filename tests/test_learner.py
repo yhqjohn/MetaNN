@@ -2,7 +2,7 @@ import pytest
 import torch
 from torch import nn
 from torch.optim import SGD
-from metamodule import Learner
+from metann import Learner
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
