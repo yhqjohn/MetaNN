@@ -13,7 +13,7 @@ __________________
 
 .. code-block::
 
-    pip install MetaModule
+    pip install MetaNN
 
 3. Example
 ___________
