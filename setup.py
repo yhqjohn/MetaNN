@@ -11,7 +11,7 @@ setup(
     description='MetaModule provides extensions of PyTorch Module for meta learning',
     license='MIT',
     author='Zhi Zhang',
-    author_email='Hanqiao Yu',
+    author_email='yhqjohn@gmail.com',
     keywords=['pytorch', 'meta learning'],
     url='https://github.com/yhqjohn/MetaModule',
     packages=find_packages(exclude=['tests']),

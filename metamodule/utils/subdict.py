@@ -1,5 +1,4 @@
 import collections
-from collections import OrderedDict
 
 
 class SubDict(collections.abc.MutableMapping):

@@ -13,3 +13,6 @@ venv/
 .idea/
 
 #docs
+
+# .pypirc
+.pypirc
