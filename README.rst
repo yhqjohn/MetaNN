@@ -20,12 +20,12 @@ ___________
 
 .. code-block::
 
-    from metamodule import Metamodule, Learner
+    from metamodule import DependentModule, Learner
     from torch import nn
     net = torch.nn.Sequential(
         nn.Linear(10, 100),
         nn.Linear(100, 5))
-    net = MetaModule(net)
+    net = DependentModule(net)
     print(net)
 
 4.License

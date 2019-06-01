@@ -1,9 +1,7 @@
 from setuptools import setup, find_packages
 
-requirements = [
-    'numpy',
-    'torch',
-]
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
 
 readme = open('README.rst').read()
 
@@ -15,7 +13,7 @@ setup(
     author='Zhi Zhang',
     author_email='Hanqiao Yu',
     keywords=['pytorch', 'meta learning'],
-    url='',
+    url='https://github.com/yhqjohn/MetaModule',
     packages=find_packages(exclude=['tests']),
     long_description=readme,
     setup_requires=requirements
