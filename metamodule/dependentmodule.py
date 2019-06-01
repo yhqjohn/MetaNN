@@ -134,7 +134,7 @@ class DependentModule(Module):
     @classmethod
     def _make_subclass(cls, module: Module):
         if not isinstance(module, cls):
-            module.__class__ = type("Meta"+type(module).__name__, (cls, type(module)), {})
+            module.__class__ = type("Dependent"+type(module).__name__, (cls, type(module)), {})
             module.reinit()
         return module
 

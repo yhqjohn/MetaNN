@@ -11,7 +11,7 @@ class SubDict(collections.abc.MutableMapping):
 
     def __getitem__(self, item):
         if item in self.sub_keys:
-            return self.super_dict.__getitem__( item)
+            return self.super_dict.__getitem__(item)
         else:
             raise KeyError(item)
 
@@ -22,7 +22,7 @@ class SubDict(collections.abc.MutableMapping):
     def __delitem__(self, key):
         self.sub_keys.remove(key)
         try:
-            self.super_dict.__delitem__(self, key)
+            del self.super_dict[key]
         except KeyError:
             pass
 
