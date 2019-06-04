@@ -28,7 +28,12 @@ ___________
     net = DependentModule(net)
     print(net)
 
-4.License
+4. Documents
+_____________
+
+`MetaNN <https://metann.readthedocs.io/>`__
+
+5. License
 __________
 
 `MIT <http://opensource.org/licenses/MIT>`__
