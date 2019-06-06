@@ -9,7 +9,7 @@ setup(
     name='MetaNN',
     version='0.1.2',
     description='MetaNN provides extensions of PyTorch nn.Module for meta learning',
-    author='Zhi Zhang',
+    author='Hanqiao Yu',
     author_email='yhqjohn@gmail.com',
     keywords=['pytorch', 'meta learning'],
     url='https://github.com/yhqjohn/MetaModule',
