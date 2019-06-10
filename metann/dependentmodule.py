@@ -32,8 +32,12 @@ class DependentModule(Module):
         if you want the origin model stay unchanged.
 
     """
-    def __new__(cls, module: Module):
-        module = cls.to_dependentmodule(module)
+    def __new__(cls, *args, **kwargs):
+        if len(args) == 1 and isinstance(args[0], Module):
+            module = cls.to_dependentmodule(args[0])
+        else:
+            module = super(DependentModule, cls).__new__(cls, *args, **kwargs)
+
         return module
 
     def __init__(self, *args, **kwargs):
@@ -199,6 +203,13 @@ class DependentModule(Module):
 
         self.apply(clear_fn)
         return self
+
+    @classmethod
+    def _sub_class(cls, module: Module):
+        if not isinstance(module, DependentModule):
+            return type("Dependent"+type(module).__name__, (DependentModule, type(module)), {})
+        else:
+            return type(module)
 
     @classmethod
     def _make_subclass(cls, module: Module):
