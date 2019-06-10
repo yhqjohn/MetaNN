@@ -1,4 +1,7 @@
 import pytest
+import sys
+sys.path.append('../')
+
 import torch
 from torch import nn
 from torch.optim import SGD

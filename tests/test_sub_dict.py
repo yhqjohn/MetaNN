@@ -1,4 +1,7 @@
 import pytest
+import sys
+sys.path.append('../')
+
 from collections import OrderedDict
 from metann.utils import SubDict
 
