@@ -1,0 +1,16 @@
+\indexentry{metann (module)@\spxentry{metann}\spxextra{module}|hyperpage}{3}
+\indexentry{DependentModule (class in metann)@\spxentry{DependentModule}\spxextra{class in metann}|hyperpage}{3}
+\indexentry{clear\_params() (metann.DependentModule method)@\spxentry{clear\_params()}\spxextra{metann.DependentModule method}|hyperpage}{3}
+\indexentry{dependents() (metann.DependentModule method)@\spxentry{dependents()}\spxextra{metann.DependentModule method}|hyperpage}{3}
+\indexentry{named\_dependents() (metann.DependentModule method)@\spxentry{named\_dependents()}\spxextra{metann.DependentModule method}|hyperpage}{3}
+\indexentry{register\_dependent() (metann.DependentModule method)@\spxentry{register\_dependent()}\spxextra{metann.DependentModule method}|hyperpage}{3}
+\indexentry{stateless() (metann.DependentModule class method)@\spxentry{stateless()}\spxextra{metann.DependentModule class method}|hyperpage}{4}
+\indexentry{substitute() (metann.DependentModule method)@\spxentry{substitute()}\spxextra{metann.DependentModule method}|hyperpage}{4}
+\indexentry{substitute\_from\_list() (metann.DependentModule method)@\spxentry{substitute\_from\_list()}\spxextra{metann.DependentModule method}|hyperpage}{4}
+\indexentry{to\_dependentmodule() (metann.DependentModule class method)@\spxentry{to\_dependentmodule()}\spxextra{metann.DependentModule class method}|hyperpage}{4}
+\indexentry{update\_shapes() (metann.DependentModule method)@\spxentry{update\_shapes()}\spxextra{metann.DependentModule method}|hyperpage}{4}
+\indexentry{Learner (class in metann)@\spxentry{Learner}\spxextra{class in metann}|hyperpage}{4}
+\indexentry{functional() (metann.Learner method)@\spxentry{functional()}\spxextra{metann.Learner method}|hyperpage}{4}
+\indexentry{metann.utils (module)@\spxentry{metann.utils}\spxextra{module}|hyperpage}{5}
+\indexentry{SubDict (class in metann.utils)@\spxentry{SubDict}\spxextra{class in metann.utils}|hyperpage}{5}
+\indexentry{update\_keys() (metann.utils.SubDict method)@\spxentry{update\_keys()}\spxextra{metann.utils.SubDict method}|hyperpage}{5}

@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>metann package &mdash; MetaNN 0.1.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="metann.utils package" href="metann.utils.html" />
+    <link rel="prev" title="MetaNN for PyTorch Meta Learning" href="readme_link.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> MetaNN
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html">MetaNN for PyTorch Meta Learning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">metann package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-metann">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metann.utils.html">metann.utils package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MetaNN</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>metann package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/metann.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="metann-package">
+<h1>metann package<a class="headerlink" href="#metann-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-metann">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-metann" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="metann.DependentModule">
+<em class="property">class </em><code class="descclassname">metann.</code><code class="descname">DependentModule</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>This module provides an extension to nn.Module by add a subset to buffers, dependents. They are similar to parameter,
+but they are registered in buffers, so that they can have grad_fn.
+This module calls DependentModule.to_dependentmodule when it is created. It turns the module and all of its
+submodules into sub class of DependentModule</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;net = Sequential(Linear(10, 5), Linear(5, 2))</span>
+<span class="go">&gt;&gt;&gt;DependentModule(net)</span>
+<span class="go">DependentSequential(</span>
+<span class="go">  (0): DependentLinear(in_features=10, out_features=5, bias=True)</span>
+<span class="go">  (1): DependentLinear(in_features=5, out_features=2, bias=True)</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This class change the origin module when initializing, you might use</p>
+<p>&gt;&gt;&gt;DependentModule(deepcopy(net))</p>
+<p>if you want the origin model stay unchanged.</p>
+</div>
+<dl class="method">
+<dt id="metann.DependentModule.clear_params">
+<code class="descname">clear_params</code><span class="sig-paren">(</span><em>init=False</em>, <em>clear_filter=&lt;function DependentModule.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule.clear_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear all parameters of self and register them as dependents.
+:param init: Set the values of dependents to None if set to False, otherwise keep the value of origin parameters.
+:param clear_filter: Function that return False when those modules you don’t want to clear parameters are input</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="metann.DependentModule.dependents">
+<code class="descname">dependents</code><span class="sig-paren">(</span><em>recurse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule.dependents" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recurse</strong> – traverse only the direct submodules of self if set to False</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>iterator of dependents of self and sub modules.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="metann.DependentModule.named_dependents">
+<code class="descname">named_dependents</code><span class="sig-paren">(</span><em>prefix=''</em>, <em>recurse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule.named_dependents" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – the prefix of the names</p></li>
+<li><p><strong>recurse</strong> – traverse only the direct submodules of self if set to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>iterator of name, dependent pairs of self and sub modules.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="metann.DependentModule.register_dependent">
+<code class="descname">register_dependent</code><span class="sig-paren">(</span><em>name</em>, <em>tensor</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule.register_dependent" title="Permalink to this definition">¶</a></dt>
+<dd><p>register a named tensor to dependents.
+:param name: name of dependent
+:param tensor:</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;dnet = DependentModule(net)</span>
+<span class="go">&gt;&gt;&gt;dnet.register_dependent(&#39;some_tensor&#39;, torch.randn(3, 3))</span>
+<span class="go">&gt;&gt;&gt;dnet.some_tensor</span>
+<span class="go">tensor([[ 0.4434,  0.9949, -0.4385],</span>
+<span class="go">        [-0.5292,  0.2555,  0.7772],</span>
+<span class="go">        [-0.5386,  0.6152, -0.3239]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="metann.DependentModule.stateless">
+<em class="property">classmethod </em><code class="descname">stateless</code><span class="sig-paren">(</span><em>module: torch.nn.modules.module.Module</em>, <em>clear_filter=&lt;function DependentModule.&lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule.stateless" title="Permalink to this definition">¶</a></dt>
+<dd><p>transform input module into a DependentModule whose parameters are cleared.
+:param module:
+:param clear_filter:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="metann.DependentModule.substitute">
+<code class="descname">substitute</code><span class="sig-paren">(</span><em>named_params</em>, <em>strict=True</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule.substitute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Substitute self’s dependents with the tensors of same name
+:param named_params: iterator of name, tensor pairs
+:param strict: forbid named_params and self._dependents mismatch if set to True. default: True</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="metann.DependentModule.substitute_from_list">
+<code class="descname">substitute_from_list</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule.substitute_from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Substitute from tensor list.
+:param params: iterator of tensors</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="metann.DependentModule.to_dependentmodule">
+<em class="property">classmethod </em><code class="descname">to_dependentmodule</code><span class="sig-paren">(</span><em>module: torch.nn.modules.module.Module</em>, <em>recurse=True</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule.to_dependentmodule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="metann.DependentModule.update_shapes">
+<code class="descname">update_shapes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#metann.DependentModule.update_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>update the register shape of dependents. Call this method when a dependent is initialize with None and assign
+to a tensor. <strong>Do not</strong> call this method when you are using built-in methods only.
+:return:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="metann.Learner">
+<em class="property">class </em><code class="descclassname">metann.</code><code class="descname">Learner</code><span class="sig-paren">(</span><em>module: torch.nn.modules.module.Module</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.Learner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>This module extends nn.Module by providing functional method.
+:param module: a nn.Module module</p>
+<dl class="method">
+<dt id="metann.Learner.functional">
+<code class="descname">functional</code><span class="sig-paren">(</span><em>params</em>, <em>training</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#metann.Learner.functional" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>iterable</em>) – input model parameters for functional</p></li>
+<li><p><strong>training</strong> – if the functional set to trainning=True</p></li>
+<li><p><strong>args</strong> – input</p></li>
+<li><p><strong>kwargs</strong> – input</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return the output of model</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;learner = Learner(net)</span>
+<span class="go">&gt;&gt;&gt;outputs = learner.functional(net.parameters(), training=True, x)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="metann.utils.html">metann.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metann.utils.html#module-metann.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="metann.utils.html" class="btn btn-neutral float-right" title="metann.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="readme_link.html" class="btn btn-neutral float-left" title="MetaNN for PyTorch Meta Learning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Hanqiao Yu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
