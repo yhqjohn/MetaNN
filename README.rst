@@ -33,6 +33,8 @@ _____________
 
 `MetaNN <https://metann.readthedocs.io/>`__
 
+This won't build correctly with the heavy dependency PyTorch, so I updated the sphinx built html to GitHub. I hate to use mock to solve This problem, I suggest you to clone the repository and view the html docs yourself.
+
 5. License
 __________
 
