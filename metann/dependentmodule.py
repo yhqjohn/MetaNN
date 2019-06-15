@@ -120,19 +120,21 @@ class DependentModule(Module):
         for name, param in self.named_dependents(recurse=recurse):
             yield param
 
-    def update_shapes(self):
+    def update_shapes(self, value_dict=None):
         r"""
         update the register shape of dependents. Call this method when a dependent is initialize with None and assign
         to a tensor. **Do not** call this method when you are using built-in methods only.
         :return:
         """
+        value_dict = value_dict if value_dict is not None else self._dependents
+
         def gen():
-            for name, value in self._dependents.items():
-                if value is None:
+            for name in self._dependents.keys():
+                if value_dict[name] is None:
                     if name in self._dependents_shapes:
                         yield name, self._dependents_shapes[name]
                 else:
-                    yield name, value.shape
+                    yield name, value_dict[name].shape
 
         self._dependents_shapes = dict(gen())
 
@@ -192,14 +194,16 @@ class DependentModule(Module):
 
         def clear_fn(module: DependentModule):
             if clear_filter(module):
-                for name, value in module._parameters.items():
-                    module._dependents[name] = torch.Tensor(value)
-                module._parameters = OrderedDict()
-                module.update_shapes()
-
-            if not init:
-                for key in module._dependents:
-                    module._dependents[key] = None
+                if not init:
+                    for key in module._parameters.keys():
+                        module._dependents[key] = None
+                    module.update_shapes(value_dict=module._parameters)
+                    module._parameters = OrderedDict()
+                else:
+                    for name, value in module._parameters.items():
+                        module._dependents[name] = value.clone().detach().requires_grad_() if value is not None else None
+                    module._parameters = OrderedDict()
+                    module.update_shapes()
 
         self.apply(clear_fn)
         return self
