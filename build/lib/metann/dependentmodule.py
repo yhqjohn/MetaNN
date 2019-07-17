@@ -193,7 +193,7 @@ class DependentModule(Module):
         def clear_fn(module: DependentModule):
             if clear_filter(module):
                 for name, value in module._parameters.items():
-                    module._dependents[name] = torch.Tensor(value)
+                    module._dependents[name] = value.clone().detach().requires_grad_() if value is not None else None
                 module._parameters = OrderedDict()
                 module.update_shapes()
 
