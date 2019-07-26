@@ -1,5 +1,6 @@
 import pytest
 import sys
+from copy import deepcopy
 sys.path.append('../')
 
 import torch
@@ -28,3 +29,17 @@ def test_dependent_module():
     x = torch.randn(3, 3, 5, 5).to(device)
     print(net)
     assert net(x).shape == torch.Size([3, 4])
+
+
+def test_deepcopy():
+    net = nn.Sequential(
+        nn.Conv2d(3, 3, 3),
+        nn.Conv2d(3, 3, 3),
+        Flatten(),
+        nn.Linear(3, 4),
+    )
+    net = DependentModule(net).to(device)
+    x = torch.randn(3, 3, 5, 5).to(device)
+    net2 = deepcopy(net)
+    print(net2)
+    assert net2(x).shape == torch.Size([3, 4])
