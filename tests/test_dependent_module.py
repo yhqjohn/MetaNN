@@ -43,3 +43,17 @@ def test_deepcopy():
     net2 = deepcopy(net)
     print(net2)
     assert net2(x).shape == torch.Size([3, 4])
+
+
+def test_resnet():
+    try:
+        from torchvision.models.resnet import resnet18
+        from metann import Learner
+        net = resnet18()
+        net = Learner(net)
+        print(net.functional(net.parameters(), True, torch.randn(3, 3, 224, 224)))
+    except ImportError:
+        Warning('torchvision not included, cannot be tested')
+        return
+    finally:
+        return

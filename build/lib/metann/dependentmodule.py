@@ -42,11 +42,13 @@ class DependentModule(Module):
 
     def __init__(self, *args, **kwargs):
         self._dependents = SubDict(self._buffers)
+        self._active_dependents = SubDict(self._dependents)
         self._dependents_shapes = {}
 
     def _reinit(self):
 
         self._dependents = SubDict(self._buffers)
+        self._active_dependents = SubDict(self._dependents)
         self._dependents_shapes = {}
 
     def __setattr__(self, name, value):
@@ -87,12 +89,11 @@ class DependentModule(Module):
                             "(torch Tensor or None required)"
                             .format(torch.typename(tensor), name))
         else:
-            self._dependents[name] = tensor
             if tensor is not None:
+                self._active_dependents[name] = tensor
                 self._dependents_shapes[name] = tensor.shape
             else:
-                if name not in self._dependents_shapes.keys():
-                    self._dependents_shapes[name] = None
+                self._dependents[name] = tensor
 
     def named_dependents(self, prefix='', recurse=True):
         r"""
@@ -103,7 +104,7 @@ class DependentModule(Module):
         memo = set()
         modules = self.named_modules(prefix=prefix) if recurse else [(prefix, self)]
         for module_prefix, module in modules:
-            members = (lambda module: module._dependents.items())(module)
+            members = (lambda module: module._active_dependents.items())(module)
             for k, v in members:
                 if v in memo and v is not None:
                     continue
@@ -127,10 +128,12 @@ class DependentModule(Module):
         :return:
         """
         def gen():
-            for name, value in self._dependents.items():
+            for name, value in self._active_dependents.items():
                 if value is None:
                     if name in self._dependents_shapes:
                         yield name, self._dependents_shapes[name]
+                    else:
+                        continue
                 else:
                     yield name, value.shape
 
@@ -139,8 +142,8 @@ class DependentModule(Module):
     def _substitute(self, name, value):
         if name not in self._dependents:
             raise KeyError("{} is not in dependent parameters".format(name))
-        elif self._dependents_shapes[name] is not None and self._dependents_shapes[name] != value.shape:
-            raise ValueError("size mismatch for {}, expect {}, got{}".format(
+        elif name in self._dependents_shapes.keys() and self._dependents_shapes[name] != value.shape:
+            raise ValueError("size mismatch for {}, expect {}, got {}".format(
                 name, self._dependents_shapes[name], value.shape))
 
         self._dependents[name] = value
@@ -148,11 +151,14 @@ class DependentModule(Module):
     def _substitute_from_params_dict(self, params_dict, prefix, strict=True):
         for name in self._dependents:
             key = prefix + name
-            if strict:
+            if strict == True:
                 if key in params_dict:
                     self._substitute(name, params_dict[key])
                 else:
-                    raise ValueError("params_dict and interim parameters mismatch")
+                    raise ValueError("params_dict and interim parameters mismatch, got {}".format(key))
+            elif strict == 'one way':
+                if key in params_dict:
+                    self._substitute(name, params_dict[key])
             else:
                 if key in params_dict:
                     try:
@@ -181,7 +187,14 @@ class DependentModule(Module):
         :param params: iterator of tensors
         """
         named_params = ((k, v) for (k, _), v in zip(self.named_dependents(), params))
-        self.substitute(named_params)
+        self.substitute(named_params, strict='one way')
+
+    def update_actives(self):
+        keys = set()
+        for key in self._dependents.keys():
+            if isinstance(self._dependents[key], torch.Tensor):
+                keys.add(key)
+        self._active_dependents = SubDict(self._dependents, keys)
 
     def clear_params(self, init=False, clear_filter=lambda x: True):
         r"""
@@ -195,6 +208,7 @@ class DependentModule(Module):
                 for name, value in module._parameters.items():
                     module._dependents[name] = value.clone().detach().requires_grad_() if value is not None else None
                 module._parameters = OrderedDict()
+                module.update_actives()
                 module.update_shapes()
 
             if not init:

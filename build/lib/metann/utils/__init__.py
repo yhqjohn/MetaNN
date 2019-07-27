@@ -1,3 +1,3 @@
-from .subdict import SubDict
+from .containers import SubDict
 
-__all__ = ('SubDict',)
+__all__ = ('SubDict', )
