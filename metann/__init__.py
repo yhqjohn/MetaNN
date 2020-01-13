@@ -1,7 +1,7 @@
 from .dependentmodule import DependentModule
-from .leaner import Learner
+from .proto import ProtoModule
 
 
-__all__ = ('DependentModule', 'Learner')
+__all__ = ('DependentModule', 'ProtoModule')
 
 __version__ = '0.1.3'

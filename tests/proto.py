@@ -5,7 +5,7 @@ sys.path.append('../')
 import torch
 from torch import nn
 from torch.optim import SGD
-from metann import Learner
+from metann import ProtoModule
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -18,8 +18,8 @@ class Flatten(nn.Module):
         return x.view(x.size(0), -1)
 
 
-def test_learner():
-    net = Learner(
+def test_proto_module():
+    net = ProtoModule(
         nn.Sequential(
             nn.Conv2d(3, 3, 3),
             nn.Conv2d(3, 3, 3),
@@ -32,7 +32,7 @@ def test_learner():
     criterion = nn.CrossEntropyLoss()
     params = list(net.parameters())
     for i in range(500):
-        outs = net.functional(params, True, x)
+        outs = net.functional(params, True)(x)
         loss = criterion(outs, y)
         grads = torch.autograd.grad(loss, params)
         with torch.no_grad():
