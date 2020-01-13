@@ -1,4 +1,6 @@
 import collections
+from collections import defaultdict
+from itertools import count
 
 
 class SubDict(collections.abc.MutableMapping):
@@ -69,3 +71,26 @@ class SubDict(collections.abc.MutableMapping):
         :return:
         """
         self.sub_keys = self.sub_keys.intersection(self.super_dict.keys())
+
+
+def _none_fun(*input):
+    return None
+
+
+class DefaultList(object):
+    def __init__(self, factory=_none_fun):
+        self.store = defaultdict(factory)
+
+    def __getitem__(self, item):
+        if not isinstance(item, int) or item < 0:
+            raise KeyError('index should be a non negative integer')
+        return self.store[item]
+
+    def __setitem__(self, key, value):
+        if not isinstance(key, int) or key < 0:
+            raise KeyError('index should be a non negative integer')
+        self.store[key] = value
+
+    def __iter__(self):
+        for idx in count(0, 1):
+            yield self.store[idx]
