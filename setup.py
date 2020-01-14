@@ -7,7 +7,7 @@ readme = open('README.rst').read()
 
 setup(
     name='MetaNN',
-    version='0.2.2',
+    version='0.2.3',
     description='MetaNN provides extensions of PyTorch nn.Module for meta learning',
     author='Hanqiao Yu',
     author_email='yhqjohn@gmail.com',
