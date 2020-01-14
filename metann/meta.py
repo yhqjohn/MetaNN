@@ -21,9 +21,9 @@ class Learner(nn.Module):
 
     def forward(self, *args, inplace=False, **kwargs):
         if inplace:
-            return self.forward_pure(*args, **kwargs)
-        else:
             return self.forward_inplace(*args, **kwargs)
+        else:
+            return self.forward_pure(*args, **kwargs)
 
     def forward_pure(self, model, data):
         raise NotImplementedError
