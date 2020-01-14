@@ -38,10 +38,10 @@ class GDLearner(Learner):
         self.steps = steps
         self.sgd = SequentialGDLearner(lr, momentum=0, create_graph=create_graph, evaluator=evaluator)
 
-    def forward(self, model, data, retain_graph=True, **kwargs):
+    def forward(self, model, data, inplace=False, **kwargs):
         kwargs['model'] = model
         kwargs['data'] = [data, ]*self.steps
-        kwargs['retain_graph'] = retain_graph
+        kwargs['inplace'] = inplace
         return self.sgd(**kwargs)
 
 

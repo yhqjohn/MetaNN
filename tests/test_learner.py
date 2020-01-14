@@ -32,7 +32,7 @@ def test_gdlearner():
     print(loss)
     loss = default_evaluator_classification(model0, data)
     print(loss)
-    model1 = learner(model0, data, retain_graph=False)
+    model1 = learner(model0, data, inplace=True)
     loss = default_evaluator_classification(model0, data)
     print(loss)
     assert loss <= 0.2
