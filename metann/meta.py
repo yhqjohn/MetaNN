@@ -19,14 +19,13 @@ class Learner(nn.Module):
     def __init__(self):
         super(Learner, self).__init__()
 
-    def forward(self, *args, **kwargs):
-        retain_graph = kwargs.pop('retain_graph') if 'retain_graph' in kwargs.keys() else True
-        if retain_graph:
-            return self.forward_retain_graph(*args, **kwargs)
+    def forward(self, *args, inplace=False, **kwargs):
+        if inplace:
+            return self.forward_pure(*args, **kwargs)
         else:
             return self.forward_inplace(*args, **kwargs)
 
-    def forward_retain_graph(self, model, data):
+    def forward_pure(self, model, data):
         raise NotImplementedError
 
     def forward_inplace(self, model, data):
@@ -54,7 +53,7 @@ class SequentialGDLearner(Learner):
         self.create_graph = create_graph
         self.evaluator = evaluator
 
-    def forward_retain_graph(self, model, data, evaluator=None):
+    def forward_pure(self, model, data, evaluator=None):
         evaluator = self.evaluator if evaluator is None else evaluator
         model = ProtoModule(model)
         model.train()
