@@ -34,10 +34,10 @@ class Learner(nn.Module):
 
 
 class GDLearner(Learner):
-    def __init__(self, steps, lr, create_graph=True):
+    def __init__(self, steps, lr, create_graph=True, evaluator=default_evaluator_classification):
         super(GDLearner, self).__init__()
         self.steps = steps
-        self.sgd = SequentialGDLearner(lr, momentum=0, create_graph=create_graph)
+        self.sgd = SequentialGDLearner(lr, momentum=0, create_graph=create_graph, evaluator=evaluator)
 
     def forward(self, model, data, retain_graph=True, **kwargs):
         kwargs['model'] = model
@@ -47,13 +47,15 @@ class GDLearner(Learner):
 
 
 class SequentialGDLearner(Learner):
-    def __init__(self, lr, momentum=0.5, create_graph=True):
+    def __init__(self, lr, momentum=0.5, create_graph=True, evaluator=default_evaluator_classification):
         super(SequentialGDLearner, self).__init__()
         self.lr = lr
         self.momentum = momentum
         self.create_graph = create_graph
+        self.evaluator = evaluator
 
-    def forward_retain_graph(self, model, data, evaluator=default_evaluator_classification):
+    def forward_retain_graph(self, model, data, evaluator=None):
+        evaluator = self.evaluator if evaluator is None else evaluator
         model = ProtoModule(model)
         model.train()
         fast_weights = np.array(list(model.parameters()))
@@ -65,7 +67,8 @@ class SequentialGDLearner(Learner):
             fast_weights[actives] = [w - self.lr * g for (w, g) in zip(fast_weights[actives], grads)]
         return model.functional(fast_weights)
 
-    def forward_inplace(self, model, data, evaluator=default_evaluator_classification):
+    def forward_inplace(self, model, data, evaluator=None):
+        evaluator = self.evaluator if evaluator is None else evaluator
         optim = torch.optim.SGD(model.parameters(), lr=self.lr, momentum=self.momentum)
         for batch in data:
             optim.zero_grad()
