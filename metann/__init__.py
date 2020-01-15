@@ -4,4 +4,4 @@ from .proto import ProtoModule
 
 __all__ = ('DependentModule', 'ProtoModule')
 
-__version__ = '0.2.3'
+__version__ = '0.2.4'

@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from .utils.containers import DefaultList
 from metann import DependentModule, ProtoModule
+from metann.utils.containers import DefaultList
 import numpy as np
 
 
@@ -58,12 +59,14 @@ class SequentialGDLearner(Learner):
         model = ProtoModule(model)
         model.train()
         fast_weights = np.array(list(model.parameters()))
+        velocities = DefaultList(lambda: 0)
         actives = is_tensor(fast_weights)
         for batch in data:
             fast_loss = evaluator(model.functional(fast_weights), batch)
             grads = torch.autograd.grad(fast_loss, fast_weights[actives],
                                         create_graph=self.create_graph)
-            fast_weights[actives] = [w - self.lr * g for (w, g) in zip(fast_weights[actives], grads)]
+            velocities = [grad + velocity*self.momentum for (grad, velocity) in zip(grads, velocities)]
+            fast_weights[actives] = [w - self.lr * g for (w, g) in zip(fast_weights[actives], velocities)]
         return model.functional(fast_weights)
 
     def forward_inplace(self, model, data, evaluator=None):
