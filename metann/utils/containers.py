@@ -78,7 +78,7 @@ def _none_fun(*input):
 
 
 class DefaultList(object):
-    def __init__(self, factory=_none_fun):
+    def __init__(self, factory=_none_fun, fill=None):
         self.store = defaultdict(factory)
 
     def __getitem__(self, item):
@@ -94,3 +94,7 @@ class DefaultList(object):
     def __iter__(self):
         for idx in count(0, 1):
             yield self.store[idx]
+
+    def fill(self, data: collections.abc.Iterable):
+        for idx, value in enumerate(data):
+            self.store[idx] = value

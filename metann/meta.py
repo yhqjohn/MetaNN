@@ -80,6 +80,72 @@ class SequentialGDLearner(Learner):
         return model
 
 
+def _rms_prop(data, grad, state):
+    if state['r'] is None:
+        state['r'] = torch.zeros_like(data)
+    if state['centered'] and state['grad_avg'] is None:
+        state['grad_avg'] = torch.zeros_like(data)
+    alpha, eps = state['alpha'], state['eps']
+
+    r = state['r'] = state['r'].mul(alpha).addcmul(1-alpha, grad, grad)
+
+    if state['centered']:
+        grad_avg = state['grad_avg'] = state['grad_avg'].mul(alpha).add(1 - alpha, grad)
+        avg = r.addcmul(-1, grad_avg, grad_avg).sqrt().add(eps)
+    else:
+        avg = r.sqrt().add(eps)
+
+    return data.addcdiv(-state['lr'], grad, avg), state
+
+
+class RMSPropLearner(Learner):
+    def __init__(self, lr=1e-2, alpha=0.99, eps=1e-8, centered=False, create_graph=True,
+                 evaluator=default_evaluator_classification, steps=None):
+        super(RMSPropLearner, self).__init__()
+        self.lr = lr
+        self.alpha = alpha
+        self.eps = eps
+        self.centered = centered
+        self.evaluator = evaluator
+        self.steps = steps
+        self.create_graph = create_graph
+
+    def forward_pure(self, model, data, evaluator=None):
+        if self.steps is not None:
+            data = [data, ]*self.steps
+        evaluator = self.evaluator if evaluator is None else evaluator
+        model = ProtoModule(model)
+        model.train()
+        fast_weights = np.array(list(model.parameters()))
+        actives = is_tensor(fast_weights)
+        states = DefaultList(lambda: {'centered': self.centered, 'alpha': self.alpha,
+                                      'lr': self.lr, 'eps': self.eps,
+                                      'r': None, 'grad_avg': None})
+        for batch in data:
+            fast_loss = evaluator(model.functional(fast_weights), batch)
+            grads = torch.autograd.grad(fast_loss, fast_weights[actives],
+                                        create_graph=self.create_graph)
+            _fast_weights = []
+            for i, (w, g, s) in enumerate(zip(fast_weights[actives], grads, states)):
+                w, states[i] = _rms_prop(w, g, s)
+                _fast_weights.append(w)
+            fast_weights[actives] = _fast_weights
+        return model.functional(fast_weights)
+
+    def forward_inplace(self, model, data, evaluator=None):
+        if self.steps is not None:
+            data = [data, ]*self.steps
+        evaluator = self.evaluator if evaluator is None else evaluator
+        optim = torch.optim.RMSprop(model.parameters(), lr=self.lr,
+                                    alpha=self.alpha, eps=self.eps, centered=self.centered)
+        for batch in data:
+            optim.zero_grad()
+            loss = evaluator(model, batch)
+            loss.backward()
+            optim.step()
+        return model
+
+
 class MAML(nn.Module):
     def __init__(self, model, steps_train, steps_eval, lr,
                  evaluator=default_evaluator_classification, first_order = False):
