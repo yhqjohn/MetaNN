@@ -1,22 +1,28 @@
-from setuptools import setup, find_packages
+import setuptools
 
-with open('requirements.txt') as f:
-    requirements = f.read().splitlines()
+with open("README.rst", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
-readme = open('README.rst').read()
-
-setup(
+setuptools.setup(
     name='MetaNN',
-    version='0.2.7',
+    version='0.2.8',
     description='MetaNN provides extensions of PyTorch nn.Module for meta learning',
     author='Hanqiao Yu',
     author_email='yhqjohn@gmail.com',
-    keywords=['pytorch', 'meta learning'],
-    url='https://github.com/yhqjohn/MetaModule',
-    packages=find_packages(exclude=['tests']),
-    long_description=readme,
-    setup_requires=requirements,
+    long_description=long_description,
+    long_description_content_type="text/x-rst",
+    url="https://github.com/yhqjohn/MetaModule",
+    project_urls={
+        "Bug Tracker": "https://github.com/yhqjohn/MetaModule/issues",
+    },
     classifiers=[
-        'License :: OSI Approved :: MIT License',
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
     ],
+    packages=setuptools.find_packages(exclude=['tests']),
+    python_requires=">=3.6",
+    install_requires=[
+        'torch>=0.4.1',
+    ]
 )
