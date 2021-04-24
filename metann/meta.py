@@ -1,12 +1,21 @@
 import torch
 from torch import nn
-from .utils.containers import DefaultList
+from .utils.containers import DefaultList, MultipleList
+from .utils.numpy import to_array
 from metann import DependentModule, ProtoModule
 from metann.utils.containers import DefaultList
 import numpy as np
 
 
 is_tensor = np.vectorize(lambda x: isinstance(x, torch.Tensor))
+
+
+def active_indices(lst):
+    indices = []
+    for k, v in enumerate(lst):
+        if isinstance(v, torch.Tensor):
+            indices.append(k)
+    return indices
 
 
 def default_evaluator_classification(model, data, criterion=nn.CrossEntropyLoss()):
@@ -58,9 +67,9 @@ class SequentialGDLearner(Learner):
         evaluator = self.evaluator if evaluator is None else evaluator
         model = ProtoModule(model)
         model.train()
-        fast_weights = np.array(list(model.parameters()))
+        fast_weights = MultipleList(list(model.parameters()))
         velocities = DefaultList(lambda: 0)
-        actives = is_tensor(fast_weights)
+        actives = active_indices(fast_weights)
         for batch in data:
             fast_loss = evaluator(model.functional(fast_weights), batch)
             grads = torch.autograd.grad(fast_loss, fast_weights[actives],
@@ -116,8 +125,8 @@ class RMSPropLearner(Learner):
         evaluator = self.evaluator if evaluator is None else evaluator
         model = ProtoModule(model)
         model.train()
-        fast_weights = np.array(list(model.parameters()))
-        actives = is_tensor(fast_weights)
+        fast_weights = MultipleList(list(model.parameters()))
+        actives = active_indices(fast_weights)
         states = DefaultList(lambda: {'centered': self.centered, 'alpha': self.alpha,
                                       'lr': self.lr, 'eps': self.eps,
                                       'r': None, 'grad_avg': None})
@@ -148,7 +157,7 @@ class RMSPropLearner(Learner):
 
 class MAML(nn.Module):
     def __init__(self, model, steps_train, steps_eval, lr,
-                 evaluator=default_evaluator_classification, first_order = False):
+                 evaluator=default_evaluator_classification, first_order=False):
         super(MAML, self).__init__()
         self.model = model
         self.steps_train = steps_train

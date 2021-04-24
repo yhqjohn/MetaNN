@@ -98,3 +98,24 @@ class DefaultList(object):
     def fill(self, data: collections.abc.Iterable):
         for idx, value in enumerate(data):
             self.store[idx] = value
+
+
+class MultipleList(object):
+    def __init__(self, lst):
+        self.lst = lst
+
+    def __getitem__(self, item):
+        if isinstance(item, collections.abc.Iterable):
+            return [self.lst[i] for i in item]
+        else:
+            return self.lst[item]
+
+    def __setitem__(self, key, value):
+        if isinstance(key, collections.abc.Iterable):
+            for k, v in zip(key, value):
+                self.lst[k] = v
+        else:
+            self.lst[key] = value
+
+    def __iter__(self):
+        return iter(self.lst)
