@@ -28,6 +28,22 @@ ___________
     net = DependentModule(net)
     print(net)
 
+I suggest you to use higher-level api such as MAML class.
+
+.. code-block::
+
+    from metann.meta import MAML, default_evaluator_classification as evaluator
+    from torch import nn
+    net = torch.nn.Sequential(
+        nn.Linear(10, 100),
+        nn.Linear(100, 5))
+    )
+    maml = MAML(net, steps_train=5, steps_eval=10, lr=0.01)
+    output = maml(data_train)
+    loss = evaluator(output, data_test)
+    loss.backward()
+
+
 4. Documents
 _____________
 
