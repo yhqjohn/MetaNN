@@ -96,15 +96,15 @@ def _rms_prop(data, grad, state):
         state['grad_avg'] = torch.zeros_like(data)
     alpha, eps = state['alpha'], state['eps']
 
-    r = state['r'] = state['r'].mul(alpha).addcmul(1-alpha, grad, grad)
+    r = state['r'] = state['r'].mul(alpha).addcmul(grad, grad, value=1-alpha)
 
     if state['centered']:
-        grad_avg = state['grad_avg'] = state['grad_avg'].mul(alpha).add(1 - alpha, grad)
-        avg = r.addcmul(-1, grad_avg, grad_avg).sqrt().add(eps)
+        grad_avg = state['grad_avg'] = state['grad_avg'].mul(alpha).add(grad, alpha=1 - alpha)
+        avg = r.addcmul(grad_avg, grad_avg, value=-1).sqrt().add(eps)
     else:
         avg = r.sqrt().add(eps)
 
-    return data.addcdiv(-state['lr'], grad, avg), state
+    return data.addcdiv(grad, avg, value=-state['lr']), state
 
 
 class RMSPropLearner(Learner):
