@@ -29,7 +29,8 @@ def default_evaluator_classification(model, data, criterion=nn.CrossEntropyLoss(
 def mamlpp_evaluator(mimo, data, steps, evaluator, gamma=0.6):
     weights = [1*gamma**i for i in range(steps+1)]
     weights = list(reversed(weights))
-    evaluators = [evaluator] * steps+1
+    evaluators = [evaluator] * (steps+1)
+    data = [data] * (steps+1)
     loss = mimo(data, evaluators)
     return sum(i[0] * i[1] for i in zip(loss, weights))
 
