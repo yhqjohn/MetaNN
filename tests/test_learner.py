@@ -16,6 +16,9 @@ class Flatten(nn.Module):
 
 
 def test_gdlearner():
+
+    # basic test
+
     model0 = nn.Sequential(
         nn.Conv2d(3, 3, 3),
         nn.Conv2d(3, 3, 3),
@@ -38,6 +41,8 @@ def test_gdlearner():
     print(loss)
     assert loss <= 0.2
 
+    # test backward to data
+
     model0 = nn.Sequential(
         nn.Conv2d(3, 3, 3),
         nn.Conv2d(3, 3, 3),
@@ -55,6 +60,24 @@ def test_gdlearner():
     loss.backward()
     print(dummy_x.grad.abs().sum().item())
     assert dummy_x.grad.abs().sum().item() > 0
+
+    # test MIMO
+
+    model0 = nn.Sequential(
+        nn.Conv2d(3, 3, 3),
+        nn.Conv2d(3, 3, 3),
+        Flatten(),
+        nn.Linear(3, 4),
+    ).to(device)
+    x = torch.randn(3, 3, 5, 5).to(device)
+    y = torch.randint(0, 4, (3,)).to(device)
+    data = (x, y)
+    learner = GDLearner(20, 0.1)
+
+    models = learner(model0, data, mimo=True)
+    losses = models([data] * 21, [default_evaluator_classification]*21)
+    print(losses)
+    assert losses[-1] <= 0.2
 
 
 def test_rms_proplearner():

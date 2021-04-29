@@ -1,8 +1,9 @@
 import torch
 from torch import nn
-from .utils.containers import DefaultList, MultipleList
-from .utils.numpy import to_array
-from metann import DependentModule, ProtoModule
+
+from .proto import tensor_copy, mimo_functional
+from .utils.containers import MultipleList
+from metann import ProtoModule
 from metann.utils.containers import DefaultList
 import numpy as np
 
@@ -23,6 +24,15 @@ def default_evaluator_classification(model, data, criterion=nn.CrossEntropyLoss(
     logits = model(x)
     loss = criterion(logits, y)
     return loss
+
+
+def mamlpp_evaluator(mimo, data, steps, evaluator, gamma=0.6):
+    weights = [1*gamma**i for i in range(steps+1)]
+    weights = list(reversed(weights))
+    evaluators = [evaluator] * steps+1
+    loss = mimo(data, evaluators)
+    return sum(i[0] * i[1] for i in zip(loss, weights))
+
 
 
 class Learner(nn.Module):
@@ -63,20 +73,34 @@ class SequentialGDLearner(Learner):
         self.create_graph = create_graph
         self.evaluator = evaluator
 
-    def forward_pure(self, model, data, evaluator=None):
+    def forward_pure(self, model, data, evaluator=None, mimo=False):
         evaluator = self.evaluator if evaluator is None else evaluator
         model = ProtoModule(model)
         model.train()
-        fast_weights = MultipleList(list(model.parameters()))
-        velocities = DefaultList(lambda: 0)
-        actives = active_indices(fast_weights)
-        for batch in data:
-            fast_loss = evaluator(model.functional(fast_weights), batch)
-            grads = torch.autograd.grad(fast_loss, fast_weights[actives],
-                                        create_graph=self.create_graph)
-            velocities = [grad + velocity*self.momentum for (grad, velocity) in zip(grads, velocities)]
-            fast_weights[actives] = [w - self.lr * g for (w, g) in zip(fast_weights[actives], velocities)]
-        return model.functional(fast_weights)
+        if mimo:
+            fast_weights_lst = [MultipleList(list(model.parameters()))]
+            velocities = DefaultList(lambda: 0)
+            actives = active_indices(fast_weights_lst[-1])
+            for batch in data:
+                fast_weights = tensor_copy(fast_weights_lst[-1])
+                fast_loss = evaluator(model.functional(fast_weights), batch)
+                grads = torch.autograd.grad(fast_loss, fast_weights[actives],
+                create_graph=self.create_graph)
+                velocities = [grad + velocity*self.momentum for (grad, velocity) in zip(grads, velocities)]
+                fast_weights[actives] = [w - self.lr * g for (w, g) in zip(fast_weights[actives], velocities)]
+                fast_weights_lst.append(fast_weights)
+            return mimo_functional(model, fast_weights_lst)
+        else:
+            fast_weights = MultipleList(list(model.parameters()))
+            velocities = DefaultList(lambda: 0)
+            actives = active_indices(fast_weights)
+            for batch in data:
+                fast_loss = evaluator(model.functional(fast_weights), batch)
+                grads = torch.autograd.grad(fast_loss, fast_weights[actives],
+                                            create_graph=self.create_graph)
+                velocities = [grad + velocity*self.momentum for (grad, velocity) in zip(grads, velocities)]
+                fast_weights[actives] = [w - self.lr * g for (w, g) in zip(fast_weights[actives], velocities)]
+            return model.functional(fast_weights)
 
     def forward_inplace(self, model, data, evaluator=None):
         evaluator = self.evaluator if evaluator is None else evaluator
@@ -173,3 +197,27 @@ class MAML(nn.Module):
             steps = self.steps_eval
         learner = GDLearner(self.steps_train, self.lr, create_graph=not self.first_order)
         return learner(self.model, data, evaluator=self.evaluator)
+
+
+class MAMLpp(nn.Module):
+    def __init__(self, model, steps_train, steps_eval, lr,
+                 evaluator=default_evaluator_classification, first_order=False):
+        super(MAML, self).__init__()
+        self.model = model
+        self.steps_train = steps_train
+        self.steps_eval = steps_eval
+        self.lr = lr
+        self.evaluator = evaluator
+        self.first_order = first_order
+
+    def forward(self, data):
+        if self.training:
+            steps = self.steps_train
+        else:
+            steps = self.steps_eval
+        learner = GDLearner(self.steps_train, self.lr, create_graph=not self.first_order)
+
+        if self.training:
+            return learner(self.model, data, evaluator=self.evaluator, mimo=True)
+        else:
+            return learner(self.model, data, evaluator=self.evaluator)

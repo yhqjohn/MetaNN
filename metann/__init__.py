@@ -1,5 +1,5 @@
 from .dependentmodule import DependentModule
-from .proto import ProtoModule
+from .proto import ProtoModule, tensor_copy, mimo_functional
 
 
 __all__ = ('DependentModule', 'ProtoModule')
