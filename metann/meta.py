@@ -32,7 +32,7 @@ def mamlpp_evaluator(mimo, data, steps, evaluator, gamma=0.6):
     evaluators = [evaluator] * (steps+1)
     data = [data] * (steps+1)
     loss = mimo(data, evaluators)
-    return sum(i[0] * i[1] for i in zip(loss, weights))
+    return sum(i[0] * i[1] for i in zip(loss, weights)), loss[-1]
 
 
 
