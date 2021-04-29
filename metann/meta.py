@@ -203,7 +203,7 @@ class MAML(nn.Module):
 class MAMLpp(nn.Module):
     def __init__(self, model, steps_train, steps_eval, lr,
                  evaluator=default_evaluator_classification, first_order=False):
-        super(MAML, self).__init__()
+        super(MAMLpp, self).__init__()
         self.model = model
         self.steps_train = steps_train
         self.steps_eval = steps_eval
