@@ -12,14 +12,12 @@ This module provide an extension of torch.nn.Module, DependentModule that has de
 __________________
 
 .. code-block::
-
     pip install MetaNN
 
 3. Example
 ___________
 
 .. code-block::
-
     from metann import DependentModule, Learner
     from torch import nn
     net = torch.nn.Sequential(
@@ -31,7 +29,6 @@ ___________
 I suggest you to use higher-level api such as MAML class.
 
 .. code-block::
-
     from metann.meta import MAML, default_evaluator_classification as evaluator
     from torch import nn
     net = torch.nn.Sequential(
