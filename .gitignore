@@ -12,6 +12,10 @@ venv/
 .idea/
 
 #docs
+docs/build
+
+#pytest cache
+.pytest_cache
 
 # .pypirc
 .pypirc

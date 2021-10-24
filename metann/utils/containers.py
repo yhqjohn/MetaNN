@@ -6,16 +6,18 @@ from itertools import count
 class SubDict(collections.abc.MutableMapping):
     r"""
     Provide a sub dict **access** to a super dict.
-    Parameters:
-        :param super_dict (Mapping): The super dictionary where you want to take a sub dict
-        :param keys (iterable): An iterable of keys according to which you want to access a sub dict
-        :param keep_order (bool): If set to true the sub dict will keep the iteration order of the super dict
-            when it is iterated. Default: True
 
-    Examples::
+    Args:
+        super_dict (Mapping): The super dictionary where you want to take a sub dict
+        keys (iterable): An iterable of keys according to which you want to access a sub dict
+        keep_order (bool): If set to true the sub dict will keep the iteration order of the super dict
+            when it is iterated.
+            Default: True
 
-        >>>super_dict = collections.OrderedDict({'a': 1, 'b': 2, 'c': 3})
-        >>>sub_dict = SubDict(super_dict, keys=['a', 'b'])
+    Examples:
+
+        >>> super_dict = collections.OrderedDict({'a': 1, 'b': 2, 'c': 3})
+        >>> sub_dict = SubDict(super_dict, keys=['a', 'b'])
     """
     def __init__(self, super_dict: collections.abc.Mapping, keys=[], keep_order=True):
         self.super_dict = super_dict

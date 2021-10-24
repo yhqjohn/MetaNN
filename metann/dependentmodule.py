@@ -14,10 +14,10 @@ class DependentModule(Module):
     This module calls DependentModule.to_dependentmodule when it is created. It turns the module and all of its
     submodules into sub class of DependentModule
 
-    Examples::
+    Examples:
 
-        >>>net = Sequential(Linear(10, 5), Linear(5, 2))
-        >>>DependentModule(net)
+        >>> net = Sequential(Linear(10, 5), Linear(5, 2))
+        >>> DependentModule(net)
         DependentSequential(
           (0): DependentLinear(in_features=10, out_features=5, bias=True)
           (1): DependentLinear(in_features=5, out_features=2, bias=True)
@@ -27,7 +27,7 @@ class DependentModule(Module):
 
         This class change the origin module when initializing, you might use
 
-        >>>DependentModule(deepcopy(net))
+        >>> DependentModule(deepcopy(net))
 
         if you want the origin model stay unchanged.
 
@@ -59,14 +59,15 @@ class DependentModule(Module):
     def register_dependent(self, name, tensor):
         r"""
         register a named tensor to dependents.
-        :param name: name of dependent
-        :param tensor:
+        Args:
+            name: name of dependent tensor
+            tensor (torch.Tensor): dependent tensor
 
-        Examples::
+        Examples:
 
-            >>>dnet = DependentModule(net)
-            >>>dnet.register_dependent('some_tensor', torch.randn(3, 3))
-            >>>dnet.some_tensor
+            >>> dnet = DependentModule(net)
+            >>> dnet.register_dependent('some_tensor', torch.randn(3, 3))
+            >>> dnet.some_tensor
             tensor([[ 0.4434,  0.9949, -0.4385],
                     [-0.5292,  0.2555,  0.7772],
                     [-0.5386,  0.6152, -0.3239]])
@@ -97,9 +98,12 @@ class DependentModule(Module):
 
     def named_dependents(self, prefix='', recurse=True):
         r"""
-        :param prefix: the prefix of the names
-        :param recurse: traverse only the direct submodules of self if set to False
-        :return: iterator of name, dependent pairs of self and sub modules.
+        Args:
+            prefix: the prefix of the names
+            recurse: traverse only the direct submodules of self if set to False
+
+        Returns:
+            Iterative: iterator of name, dependent pairs of self and sub modules.
         """
         memo = set()
         modules = self.named_modules(prefix=prefix) if recurse else [(prefix, self)]
@@ -114,18 +118,19 @@ class DependentModule(Module):
 
     def dependents(self, recurse=True):
         r"""
+        Args:
+            recurse: traverse only the direct submodules of self if set to False
 
-        :param recurse: traverse only the direct submodules of self if set to False
-        :return: iterator of dependents of self and sub modules.
+        Returns:
+            Iterative: iterator of dependents of self and sub modules.
         """
         for name, param in self.named_dependents(recurse=recurse):
             yield param
 
     def update_shapes(self):
         r"""
-        update the register shape of dependents. Call this method when a dependent is initialize with None and assign
+        Update the register shape of dependents. Call this method when a dependent is initialize with None and assign
         to a tensor. **Do not** call this method when you are using built-in methods only.
-        :return:
         """
         def gen():
             for name, value in self._active_dependents.items():
@@ -169,8 +174,10 @@ class DependentModule(Module):
     def substitute(self, named_params, strict=True):
         r"""
         Substitute self's dependents with the tensors of same name
-        :param named_params: iterator of name, tensor pairs
-        :param strict: forbid named_params and self._dependents mismatch if set to True. default: True
+
+        Args:
+            named_params: iterator of name, tensor pairs
+            strict (bool): forbid named_params and self._dependents mismatch if set to True. default: True
         """
         params_dict = dict(named_params)
 
@@ -184,7 +191,9 @@ class DependentModule(Module):
     def substitute_from_list(self, params):
         r"""
         Substitute from tensor list.
-        :param params: iterator of tensors
+
+        Args:
+            params: iterator of tensors
         """
         named_params = ((k, v) for (k, _), v in zip(self.named_dependents(), params))
         self.substitute(named_params, strict='one way')
@@ -199,8 +208,10 @@ class DependentModule(Module):
     def clear_params(self, init=False, clear_filter=lambda x: True):
         r"""
         Clear all parameters of self and register them as dependents.
-        :param init: Set the values of dependents to None if set to False, otherwise keep the value of origin parameters.
-        :param clear_filter: Function that return False when those modules you don't want to clear parameters are input
+
+        Args:
+            init (bool): Set the values of dependents to None if set to False, otherwise keep the value of origin parameters.
+            clear_filter: Function that return False when those modules you don't want to clear parameters are input
         """
 
         def clear_fn(module: DependentModule):
