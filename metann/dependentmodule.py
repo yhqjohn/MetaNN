@@ -63,7 +63,7 @@ class DependentModule(Module):
     def register_dependent(self, name, tensor):
         r"""
         register a named tensor to dependents.
-        
+
         Args:
             name: name of dependent tensor
             tensor (torch.Tensor): dependent tensor
