@@ -23,6 +23,7 @@ __________________
 ___________
 
 PyTorch suggest all parameters of a module to be independent variables. Using DependentModule arbitrary torch.nn.module can be transformed into dependent module.
+
 .. code-block:: python
 
     from metann import DependentModule
