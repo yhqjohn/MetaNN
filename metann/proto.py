@@ -9,8 +9,10 @@ from .utils.containers import MultipleList
 class ProtoModule(Module):
     r"""
     This module extends nn.Module by providing functional method.
-    It is a stateful module, but allows you to call its stateless functional
-    :param module: a nn.Module module
+    It is a stateful module, but allows you to call its stateless functional.
+
+    Args:
+        module: a nn.Module module
     """
     def __init__(self, module: Module):
         super(ProtoModule, self).__init__()
@@ -22,15 +24,15 @@ class ProtoModule(Module):
 
     def functional(self, params, training=None):
         r"""
-        :param iterable params:  input model parameters for functional
-        :param training: if the functional set to trainning=True
-        :return: return the output of model
+        Args:
+            iterable params:  input model parameters for functional
+            training: if the functional set to trainning=True
+        Returns:
+            return the output of model
 
-        Examples::
-
+        Examples:
             >>>learner = Learner(net)
             >>>outputs = learner.functional(net.parameters(), training=True)(x)
-
         """
         training = self.training if training is None else training
         self.stateless.substitute_from_list(params)

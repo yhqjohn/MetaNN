@@ -1,6 +1,10 @@
 MetaNN for PyTorch Meta Learning
 =====================================
 
+.. image:: https://readthedocs.org/projects/metann/badge/?version=latest
+:target: https://metann.readthedocs.io/en/latest/?badge=latest
+:alt: Documentation Status
+
 1. Introduction
 ____________________
 
@@ -11,16 +15,17 @@ This module provide an extension of torch.nn.Module, DependentModule that has de
 2. Installation
 __________________
 
-.. code-block::
+.. code-block:: python
 
     pip install MetaNN
 
 3. Example
 ___________
 
-.. code-block::
+PyTorch suggest all parameters of a module to be independent variables. Using DependentModule arbitrary torch.nn.module can be transformed into dependent module.
+.. code-block:: python
 
-    from metann import DependentModule, Learner
+    from metann import DependentModule
     from torch import nn
     net = torch.nn.Sequential(
         nn.Linear(10, 100),
@@ -28,9 +33,9 @@ ___________
     net = DependentModule(net)
     print(net)
 
-I suggest you to use higher-level api such as MAML class.
+Higher-level api such as MAML class are more recommended to use.
 
-.. code-block::
+.. code-block:: python
 
     from metann.meta import MAML, default_evaluator_classification as evaluator
     from torch import nn
@@ -47,9 +52,8 @@ I suggest you to use higher-level api such as MAML class.
 4. Documents
 _____________
 
+The documents are available at ReadTheDocs.
 `MetaNN <https://metann.readthedocs.io/>`__
-
-This won't build correctly with the heavy dependency PyTorch, so I updated the sphinx built html to GitHub. I hate to use mock to solve This problem, I suggest you to clone the repository and view the html docs yourself.
 
 5. License
 __________

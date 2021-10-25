@@ -2,7 +2,7 @@
 #
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
-# http://www.sphinx-doc.org/en/master/config
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # -- Path setup --------------------------------------------------------------
 
@@ -10,21 +10,21 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
-sys.path.append('..')
+sys.path.insert(0, os.path.abspath('../../'))
 
+
+master_doc = 'index'
 
 # -- Project information -----------------------------------------------------
 
 project = 'MetaNN'
-copyright = '2019, Hanqiao Yu'
+copyright = '2021, Hanqiao Yu'
 author = 'Hanqiao Yu'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.2'
+release = '0.2.9'
 
 
 # -- General configuration ---------------------------------------------------
@@ -33,10 +33,10 @@ release = '0.1.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.viewcode'
 ]
-
-master_doc = 'index'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
