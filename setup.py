@@ -5,7 +5,7 @@ with open("README.rst", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='MetaNN',
-    version='0.2.9',
+    version='0.2.10',
     description='MetaNN provides extensions of PyTorch nn.Module for meta learning',
     author='Hanqiao Yu',
     author_email='yhqjohn@gmail.com',
