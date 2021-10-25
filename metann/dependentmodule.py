@@ -1,18 +1,21 @@
+from collections import OrderedDict
+from copy import deepcopy
+
 import torch
 from torch.nn import Module
-
-from copy import deepcopy
-from collections import OrderedDict
 
 from .utils import SubDict
 
 
 class DependentModule(Module):
     r"""
-    This module provides an extension to nn.Module by add a subset to buffers, dependents. They are similar to parameter,
-    but they are registered in buffers, so that they can have grad_fn.
+    The PyTorch sugggest all parameters of a module to be independent variables, and forbid a parameter to have a grad_fn.
+    This module provides an extension to nn.Module by register a subset of buffers as **dependents**,
+    which indicates the dependent parameters.
+    This enables the parameters of a DependentModule to be the dependent variables, which is useful in meta learning.
     This module calls DependentModule.to_dependentmodule when it is created. It turns the module and all of its
-    submodules into sub class of DependentModule
+    submodules into sub class of DependentModule.
+    Then you might use clear_params to transform all parameters to dependents.
 
     Examples:
 
@@ -23,7 +26,7 @@ class DependentModule(Module):
           (1): DependentLinear(in_features=5, out_features=2, bias=True)
         )
 
-    .. note::
+   Note:
 
         This class change the origin module when initializing, you might use
 
@@ -32,6 +35,7 @@ class DependentModule(Module):
         if you want the origin model stay unchanged.
 
     """
+
     def __new__(cls, *args, **kwargs):
         if len(args) == 1 and isinstance(args[0], Module):
             module = cls.to_dependentmodule(args[0])
@@ -132,6 +136,7 @@ class DependentModule(Module):
         Update the register shape of dependents. Call this method when a dependent is initialize with None and assign
         to a tensor. **Do not** call this method when you are using built-in methods only.
         """
+
         def gen():
             for name, value in self._active_dependents.items():
                 if value is None:
@@ -184,7 +189,7 @@ class DependentModule(Module):
         def load(module: DependentModule, prefix='', _strict=True):
             module._substitute_from_params_dict(params_dict, prefix, strict=_strict)
             for name, child in module._modules.items():
-                load(child, prefix+name+'.', _strict=_strict)
+                load(child, prefix + name + '.', _strict=_strict)
 
         load(self, _strict=strict)
 
@@ -232,19 +237,28 @@ class DependentModule(Module):
     @classmethod
     def _sub_class(cls, module: Module):
         if not isinstance(module, DependentModule):
-            return type("Dependent"+type(module).__name__, (DependentModule, type(module)), {})
+            return type("Dependent" + type(module).__name__, (DependentModule, type(module)), {})
         else:
             return type(module)
 
     @classmethod
     def _make_subclass(cls, module: Module):
         if not isinstance(module, cls):
-            module.__class__ = type("Dependent"+type(module).__name__, (cls, type(module)), {})
+            module.__class__ = type("Dependent" + type(module).__name__, (cls, type(module)), {})
             module._reinit()
         return module
 
     @classmethod
     def to_dependentmodule(cls, module: Module, recurse=True):
+        r"""
+        Transform a module and all its submodule into dependent module.
+        Args:
+            module:
+            recurse: if set to be True all submodules will be transformed into dependent module recursively.
+
+        Returns:
+            DependentModule: a dependent module
+        """
         if not recurse:
             module = cls._make_subclass(module)
         else:
@@ -255,7 +269,8 @@ class DependentModule(Module):
     def stateless(cls, module: Module, clear_filter=lambda x: True):
         r"""
         transform input module into a DependentModule whose parameters are cleared.
-        :param module:
-        :param clear_filter:
+        Args:
+            module:
+            clear_filter: Function that return False when those modules you don't want to clear parameters are input
         """
         return cls.to_dependentmodule(deepcopy(module)).clear_params(clear_filter)

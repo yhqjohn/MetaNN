@@ -35,7 +35,6 @@ def mamlpp_evaluator(mimo, data, steps, evaluator, gamma=0.6):
     return sum(i[0] * i[1] for i in zip(loss, weights)), loss[-1]
 
 
-
 class Learner(nn.Module):
     def __init__(self):
         super(Learner, self).__init__()

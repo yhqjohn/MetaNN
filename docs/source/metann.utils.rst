@@ -12,14 +12,6 @@ metann.utils.containers module
    :undoc-members:
    :show-inheritance:
 
-metann.utils.numpy module
--------------------------
-
-.. automodule:: metann.utils.numpy
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 
