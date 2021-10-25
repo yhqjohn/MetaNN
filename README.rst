@@ -2,8 +2,8 @@ MetaNN for PyTorch Meta Learning
 =====================================
 
 .. image:: https://readthedocs.org/projects/metann/badge/?version=latest
-:target: https://metann.readthedocs.io/en/latest/?badge=latest
-:alt: Documentation Status
+    :target: https://metann.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 1. Introduction
 ____________________
