@@ -63,6 +63,7 @@ class DependentModule(Module):
     def register_dependent(self, name, tensor):
         r"""
         register a named tensor to dependents.
+        
         Args:
             name: name of dependent tensor
             tensor (torch.Tensor): dependent tensor
@@ -252,6 +253,7 @@ class DependentModule(Module):
     def to_dependentmodule(cls, module: Module, recurse=True):
         r"""
         Transform a module and all its submodule into dependent module.
+
         Args:
             module:
             recurse: if set to be True all submodules will be transformed into dependent module recursively.
@@ -269,6 +271,7 @@ class DependentModule(Module):
     def stateless(cls, module: Module, clear_filter=lambda x: True):
         r"""
         transform input module into a DependentModule whose parameters are cleared.
+
         Args:
             module:
             clear_filter: Function that return False when those modules you don't want to clear parameters are input
