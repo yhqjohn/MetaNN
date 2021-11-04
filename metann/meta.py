@@ -53,10 +53,11 @@ class Learner(nn.Module):
 
 
 class GDLearner(Learner):
-    def __init__(self, steps, lr, create_graph=True, evaluator=default_evaluator_classification):
+    def __init__(self, steps, lr, create_graph=True, evaluator=default_evaluator_classification, clip_value=None):
         super(GDLearner, self).__init__()
         self.steps = steps
-        self.sgd = SequentialGDLearner(lr, momentum=0, create_graph=create_graph, evaluator=evaluator)
+        self.sgd = SequentialGDLearner(lr, momentum=0, create_graph=create_graph,
+                                       evaluator=evaluator, clip_value=clip_value)
 
     def forward(self, model, data, inplace=False, **kwargs):
         kwargs['model'] = model
@@ -66,12 +67,13 @@ class GDLearner(Learner):
 
 
 class SequentialGDLearner(Learner):
-    def __init__(self, lr, momentum=0.5, create_graph=True, evaluator=default_evaluator_classification):
+    def __init__(self, lr, momentum=0.5, create_graph=True, evaluator=default_evaluator_classification, clip_value=None):
         super(SequentialGDLearner, self).__init__()
         self.lr = lr
         self.momentum = momentum
         self.create_graph = create_graph
         self.evaluator = evaluator
+        self.clip_value = clip_value
 
     def forward_pure(self, model, data, evaluator=None, mimo=False):
         evaluator = self.evaluator if evaluator is None else evaluator
@@ -86,6 +88,8 @@ class SequentialGDLearner(Learner):
                 fast_loss = evaluator(model.functional(fast_weights), batch)
                 grads = torch.autograd.grad(fast_loss, fast_weights[actives],
                 create_graph=self.create_graph)
+                if self.clip_value is not None:
+                    grads = [torch.clamp(grad, -self.clip_value, self.clip_value) for grad in grads]
                 velocities = [grad + velocity*self.momentum for (grad, velocity) in zip(grads, velocities)]
                 fast_weights[actives] = [w - self.lr * g for (w, g) in zip(fast_weights[actives], velocities)]
                 fast_weights_lst.append(fast_weights)
@@ -98,6 +102,8 @@ class SequentialGDLearner(Learner):
                 fast_loss = evaluator(model.functional(fast_weights), batch)
                 grads = torch.autograd.grad(fast_loss, fast_weights[actives],
                                             create_graph=self.create_graph)
+                if self.clip_value is not None:
+                    grads = [torch.clamp(grad, -self.clip_value, self.clip_value) for grad in grads]
                 velocities = [grad + velocity*self.momentum for (grad, velocity) in zip(grads, velocities)]
                 fast_weights[actives] = [w - self.lr * g for (w, g) in zip(fast_weights[actives], velocities)]
             return model.functional(fast_weights)
@@ -109,6 +115,8 @@ class SequentialGDLearner(Learner):
             optim.zero_grad()
             loss = evaluator(model, batch)
             loss.backward()
+            if self.clip_value is not None:
+                nn.utils.clip_grad_value_(model.parameters(), 1)
             optim.step()
         return model
 
