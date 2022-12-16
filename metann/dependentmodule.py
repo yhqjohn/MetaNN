@@ -3,8 +3,11 @@ from copy import deepcopy
 
 import torch
 from torch.nn import Module
+from torch._six import string_classes
 
 from .utils import SubDict
+
+from typing import Dict, List, Optional, Tuple, Union, Any
 
 
 class DependentModule(Module):
@@ -44,23 +47,21 @@ class DependentModule(Module):
 
         return module
 
-    def __init__(self, *args, **kwargs):
-        self._dependents = SubDict(self._buffers)
-        self._active_dependents = SubDict(self._dependents)
-        self._dependents_shapes = {}
+    def __init__(self, *args, **kwargs) -> None:
+        self._reinit()
 
-    def _reinit(self):
+    def _reinit(self) -> None:
 
         self._dependents = SubDict(self._buffers)
         self._active_dependents = SubDict(self._dependents)
         self._dependents_shapes = {}
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any) -> None:
         if isinstance(value, Module):
             value = self.to_dependentmodule(value)
         super(DependentModule, self).__setattr__(name, value)
 
-    def register_dependent(self, name, tensor):
+    def register_dependent(self, name: str, tensor: torch.Tensor) -> None:
         r"""
         register a named tensor to dependents.
 
@@ -101,7 +102,7 @@ class DependentModule(Module):
             else:
                 self._dependents[name] = tensor
 
-    def named_dependents(self, prefix='', recurse=True):
+    def named_dependents(self, prefix: str='', recurse=True):
         r"""
         Args:
             prefix: the prefix of the names
