@@ -46,16 +46,16 @@ class ProtoModule(Module):
         return self.module.named_parameters(prefix=prefix, recurse=recurse)
 
 
-def mimo_functional(proto: ProtoModule, params_lsts):
-    def mimo_foward(inputs_lst, eval_lst):
-        output_lst = []
-        for params, input, evaluator in zip(params_lsts, inputs_lst, eval_lst):
-            evaluator = (lambda x, y: x(y)) if evaluator is None else evaluator
-            out = evaluator(proto.functional(params), input)
-            output_lst.append(out)
-        return output_lst
+# def mimo_functional(proto: ProtoModule, params_lsts):
+#     def mimo_foward(inputs_lst, eval_lst):
+#         output_lst = []
+#         for params, input, evaluator in zip(params_lsts, inputs_lst, eval_lst):
+#             evaluator = (lambda x, y: x(y)) if evaluator is None else evaluator
+#             out = evaluator(proto.functional(params), input)
+#             output_lst.append(out)
+#         return output_lst
 
-    return mimo_foward
+#     return mimo_foward
 
 
 def tensor_copy(tensor_lst):
