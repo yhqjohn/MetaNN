@@ -75,7 +75,8 @@ def test_gdlearner():
     learner = GDLearner(20, 0.1)
 
     models = learner(model0, data, mimo=True)
-    losses = models([data] * 21, [default_evaluator_classification]*21)
+    # losses = models([data] * 21, [default_evaluator_classification]*21)
+    losses = [default_evaluator_classification(model, data) for model in models]
     print(losses)
     assert losses[-1] <= 0.2
 

@@ -26,13 +26,13 @@ def default_evaluator_classification(model, data, criterion=nn.CrossEntropyLoss(
     return loss
 
 
-def mamlpp_evaluator(mimo, data, steps, evaluator, gamma=0.6):
-    weights = [1*gamma**i for i in range(steps+1)]
-    weights = list(reversed(weights))
-    evaluators = [evaluator] * (steps+1)
-    data = [data] * (steps+1)
-    loss = mimo(data, evaluators)
-    return sum(i[0] * i[1] for i in zip(loss, weights)), loss[-1]
+# def mamlpp_evaluator(mimo, data, steps, evaluator, gamma=0.6):
+#     weights = [1*gamma**i for i in range(steps+1)]
+#     weights = list(reversed(weights))
+#     evaluators = [evaluator] * (steps+1)
+#     data = [data] * (steps+1)
+#     loss = mimo(data, evaluators)
+#     return sum(i[0] * i[1] for i in zip(loss, weights)), loss[-1]
 
 
 class Learner(nn.Module):
@@ -89,7 +89,7 @@ class SequentialGDLearner(Learner):
                 velocities = [grad + velocity*self.momentum for (grad, velocity) in zip(grads, velocities)]
                 fast_weights[actives] = [w - self.lr * g for (w, g) in zip(fast_weights[actives], velocities)]
                 fast_weights_lst.append(fast_weights)
-            return mimo_functional(model, fast_weights_lst)
+            return MultiModel(model, fast_weights_lst)
         else:
             fast_weights = MultipleList(list(model.parameters()))
             velocities = DefaultList(lambda: 0)
@@ -221,3 +221,34 @@ class MAMLpp(nn.Module):
             return learner(self.model, data, evaluator=self.evaluator, mimo=True)
         else:
             return learner(self.model, data, evaluator=self.evaluator)
+
+
+class MultiModel(nn.Module):
+    def __init__(self, model: ProtoModule, fast_weight_lst):
+        super(MultiModel, self).__init__()
+        self.proto = model
+        self.params_lst = fast_weight_lst
+
+    def __getitem__(self, item):
+        return self.proto.functional(self.params_lst[item])
+
+    def __len__(self):
+        return len(self.params_lst)
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self[i]
+
+    def forward(self, x):
+        raise NotImplementedError('Forward is not implemented for MultiModel.')
+
+
+def mamlpp_evaluator(mimo: MultiModel, data, steps: int, evaluator, gamma=0.6):
+    weights = [1*gamma**i for i in range(steps+1)]
+    weights = list(reversed(weights))
+    loss_lst = []
+    for i in range(steps+1):
+        loss = evaluator(mimo, data)
+        loss_lst.append(loss)
+
+    return sum(i[0] * i[1] for i in zip(loss_lst, weights)), loss_lst[-1]
