@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-from .proto import tensor_copy, mimo_functional
+from .proto import tensor_copy
 from .utils.containers import MultipleList
 from metann import ProtoModule
 from metann.utils.containers import DefaultList
@@ -248,7 +248,7 @@ def mamlpp_evaluator(mimo: MultiModel, data, steps: int, evaluator, gamma=0.6):
     weights = list(reversed(weights))
     loss_lst = []
     for i in range(steps+1):
-        loss = evaluator(mimo, data)
+        loss = evaluator(mimo[i], data)
         loss_lst.append(loss)
 
     return sum(i[0] * i[1] for i in zip(loss_lst, weights)), loss_lst[-1]

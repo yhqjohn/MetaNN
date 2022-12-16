@@ -5,8 +5,8 @@ sys.path.append('../')
 import torch
 from torch import nn
 from torch.optim import SGD
-from metann import ProtoModule, tensor_copy, mimo_functional
-from metann.meta import default_evaluator_classification
+from metann import ProtoModule, tensor_copy
+from metann.meta import default_evaluator_classification, MultiModel, mamlpp_evaluator
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -54,13 +54,13 @@ def test_proto_module_mimo():
     net.train()
     x = torch.randn(3, 3, 5, 5).to(device)
     y = torch.randint(0, 4, (3,)).to(device)
-    data = [(x, y), ]*4
+    data = (x, y)
     evaluator = default_evaluator_classification
     params = list(net.parameters())
     for i in range(500):
         params_lst = [tensor_copy(params) for _ in range(4)]
-        outs = mimo_functional(net, params_lst)(data, [evaluator]*4)
-        loss = sum(outs)
+        models = MultiModel(net, params_lst)
+        loss, last_loss = mamlpp_evaluator(models, data, 4-1, evaluator, 1.)
         grads = torch.autograd.grad(loss, params)
         with torch.no_grad():
             params = [(a-0.01*b).requires_grad_() for a, b in zip(params, grads)]
